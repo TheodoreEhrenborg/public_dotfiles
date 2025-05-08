@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+# Some files have mildly sensitive information,
+# like a `curl v2.wttr.in` shortcut that reveals where I live
+
+# Set public = true in home.nix
+sed -i 's/public ? false/public ? true/' home.nix
+
+# Remove the files with sensitive information
+rm my-abbreviations.el
+rm restic_ignore
+rm i3_swap.bash
+rm i3status_config
+rm i3_config
+rm fish_variables
+rm config.fish

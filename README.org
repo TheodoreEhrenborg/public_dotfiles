@@ -1,0 +1,37 @@
+Thanks to https://github.com/the-nix-way/home-manager-config-template for the template
+* Installing nix
+- https://zero-to-nix.com/start/install
+  - Will automatically enable flakes
+#+BEGIN_SRC sh
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+#+END_SRC
+* Initial set up
+- It may be necessary to
+  - upgrade nix via ~nix-channel --update; nix-env -iA nixpkgs.nix nixpkgs.cacert~
+  - put ~experimental-features = nix-command flakes~ in ~/home/theo/.config/nix/nix.conf~
+- Then run ~nix build '.#homeConfigurations.theo.activationPackage' && ./result/activate~
+- This will install home manager
+- In the future you can just do ~home manager switch~
+  - For a flake, ~home-manager switch --flake ~/dotfiles && fish~
+* Usage
+- packages in packages.nix
+- control dotfiles from home.nix
+* Clashing packages
+- List groups of installed packages with ~nix-env -q~
+- Which outputs something like
+#+BEGIN_EXAMPLE
+my-packages
+nix-2.13.3
+#+END_EXAMPLE
+- And then ~nix-env -e my-packages~ will get rid of anything installed in my-packages
+- Presumably my-packages was installed in a way that clashes, e.g. using ~nix-env~
+- Do not use ~nix-env~ to remove everything, because that will remove nix too
+* Upgrading
+- ~nix flake update~
+- Takes the better part of an hour and makes my laptop work hard
+* Lock file error
+Fix with
+#+BEGIN_SRC bash
+sudo chown -R $USER:nixbld /nix/var/nix/profiles/per-user/$USER
+#+END_SRC
+https://github.com/nix-community/home-manager/issues/3734
