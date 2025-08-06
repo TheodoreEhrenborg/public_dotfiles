@@ -77,6 +77,7 @@
     ifuse
     # openvpn
     zoom-us
+    anki
     teams-for-linux
     #pinentry-curses
     vulkan-tools
@@ -107,7 +108,7 @@
   systemd.user.timers.morning-alarm = {
     description = "Morning Alarm Timer";
     timerConfig = {
-      OnCalendar = "Mon-Sat 08:00";
+      OnCalendar = ["Mon-Fri 06:30" "Sat-Sun 10:00"];
       AccuracySec = "1s";
     };
     wantedBy = ["timers.target"];
@@ -117,7 +118,7 @@
     description = "Morning Alarm";
     serviceConfig = {
       Type = "oneshot";
-      Environment = "PATH=${pkgs.acpi}/bin:${pkgs.alsa-utils}/bin:${pkgs.sox}/bin:$PATH";
+      Environment = "PATH=${pkgs.acpi}/bin:${pkgs.wireplumber}/bin:${pkgs.sox}/bin:$PATH";
       ExecStart = "/home/theo/projects/alarm/target/debug/alarm";
     };
   };
@@ -127,7 +128,7 @@
     serviceConfig = {
       Type = "simple";
       Environment = "PATH=${pkgs.acpi}/bin:${pkgs.libnotify}/bin:$PATH";
-      ExecStart = "/home/theo/projects/battery_checker/target/debug/battery_checker";
+      ExecStart = "/home/theo/projects/battery_checker/target/debug/battery_checker -c 43 -w 53";
       Restart = "on-failure";
     };
     wantedBy = ["default.target"];
@@ -226,6 +227,36 @@
     wantedBy = ["timers.target"];
   };
 
+  # Disk space checker timer
+  systemd.user.timers.disk-space-checker = {
+    description = "Timer for checking disk space";
+    timerConfig = {
+      OnBootSec = "1min";
+      OnUnitActiveSec = "1min";
+      AccuracySec = "1s";
+    };
+    wantedBy = ["timers.target"];
+  };
+
+  # Disk space checker service
+  systemd.user.services.disk-space-checker = {
+    description = "Check available disk space";
+    serviceConfig = {
+      Type = "oneshot";
+      Environment = "PATH=${pkgs.coreutils}/bin:${pkgs.libnotify}/bin:$PATH";
+      ExecStart = "${pkgs.writeShellScript "check-disk-space" ''
+        # Get available space in bytes and convert to GB
+        available=$(df -B1 --output=avail / | tail -n 1)
+        available_gb=$((available / 1024 / 1024 / 1024))
+        echo $available_gb
+
+        if [ "$available_gb" -lt 40 ]; then
+          notify-send -t 15000 "Low Disk Space" "Only $available_gb GB available"
+        fi
+      ''}";
+    };
+  };
+
   # EC2 instance checker service
   systemd.user.services.ec2-checker = {
     description = "Check for running EC2 instances";
@@ -268,6 +299,23 @@
     };
     wantedBy = ["default.target"];
     after = ["graphical-session.target"];
+  };
+
+  systemd.user.timers.train-reminder = {
+    description = "Train Reminder Timer";
+    timerConfig = {
+      OnCalendar = "Mon-Fri 17:00";
+      AccuracySec = "1s";
+    };
+    wantedBy = ["timers.target"];
+  };
+
+  systemd.user.services.train-reminder = {
+    description = "Train Reminder";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.libnotify}/bin/notify-send -t 0 'check trains'";
+    };
   };
 
   systemd.services.resume-script = {
@@ -455,4 +503,6 @@
 
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
+
+  programs.nix-ld.enable = true;
 }

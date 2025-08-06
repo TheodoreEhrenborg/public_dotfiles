@@ -4,7 +4,6 @@ pkgs-home-manager.python3.withPackages (p:
     with p; [
       ipython
       jupyter
-      numpy
       vulture
       jupytext
       ipykernel

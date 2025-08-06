@@ -264,7 +264,7 @@
 ;;;;; Change buffer to rot13
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(global-set-key (kbd "s-o") 'toggle-obscure-mode)
+(global-set-key (kbd "s-y") 'toggle-obscure-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; For changing timestamps
@@ -362,7 +362,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; Save the buffer after I clock in, so I don't have to see the time
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(advice-add 'org-clock-in :after 'save-buffer)
+;(advice-add 'org-clock-in :after 'save-buffer)
+; [2025-06-20 Fri 16:11] This causes an error when it's in a different buffer, I think
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; Org roam completion was getting annoying
@@ -693,7 +694,11 @@ obscure-display-table4))))
 (setq org-tags-exclude-from-inheritance (quote ("crypt")))
 (setq org-crypt-key "Theodore Ehrenborg (2024-03-15) <theodore.ehrenborg@gmail.com>")
 ; So I don't accidentally save plaintext messages:
-(setq auto-save-default nil)
+; (setq auto-save-default nil)
+; [2025-06-19 Thu 17:59] But I think the threat of losing timesheets is worse
+; Another solution is to get the "save when clock in" function working even on other buffers.
+; But this wouldn't solve the problem of lost notes
+; I maybe should restrict this just to org files because of code formatters/etc
 
 
 
@@ -784,3 +789,52 @@ Read-only text is given the face `my-read-only'."
   (if macmahon-mode
         (add-hook 'before-save-hook 'macmahon nil t)
     (remove-hook 'before-save-hook 'macmahon t)))
+
+
+(setq flycheck-dafny-executable "/nix/store/frfz00xdrc3bhwdcfh6cnik8m7xygbw3-Dafny-4.10.0/bin/dafny")
+(setq dafny-verification-backend 'cli)
+
+
+
+(custom-set-variables
+  '(auto-save-visited-mode t))
+
+(defvar auto-save-visited-restore-timer nil
+  "Timer to restore auto-save-visited-mode.")
+
+(defun disable-auto-save-visited-for-hour ()
+  "Disable auto-save-visited-mode for an hour, then re-enable it."
+  (interactive)
+  (if auto-save-visited-mode
+      (progn
+        (auto-save-visited-mode -1)
+        (message "Disabled auto-save-visited-mode for one hour")
+        ;; Cancel existing timer if there is one
+        (when auto-save-visited-restore-timer
+          (cancel-timer auto-save-visited-restore-timer)
+          (setq auto-save-visited-restore-timer nil))
+        ;; Set new timer
+        (setq auto-save-visited-restore-timer
+              (run-at-time "1 hour" nil
+                          (lambda ()
+                            (auto-save-visited-mode 1)
+                            (message "Re-enabled auto-save-visited-mode")
+                            (setq auto-save-visited-restore-timer nil)))))
+    (message "auto-save-visited-mode is already disabled")))
+
+(defun cancel-auto-save-visited-restore ()
+  "Cancel scheduled restoration of auto-save-visited-mode."
+  (interactive)
+  (if auto-save-visited-restore-timer
+      (progn
+        (cancel-timer auto-save-visited-restore-timer)
+        (setq auto-save-visited-restore-timer nil)
+        (message "Cancelled scheduled restoration of auto-save-visited-mode"))
+    (message "No scheduled restoration to cancel")))
+
+;; In Verus, highlight assume like in Dafny mode
+(add-hook 'rust-mode-hook
+          (lambda ()
+            (font-lock-add-keywords nil
+                                   '(("\\bassume\\b" 0
+                                      (list 'face '(:background "red" :foreground "white")) t)))))

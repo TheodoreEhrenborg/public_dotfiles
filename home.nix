@@ -1,6 +1,7 @@
 {
   homeDirectory,
   pkgs-home-manager,
+  pkgs-hm-unstable,
   stateVersion,
   system,
   username,
@@ -10,7 +11,7 @@
   lite,
   public ? true,
 }: let
-  packages = import ./packages.nix {inherit pkgs-home-manager system nix-search-cli lite;};
+  packages = import ./packages.nix {inherit pkgs-home-manager pkgs-hm-unstable system nix-search-cli lite;};
 in {
   home = {
     inherit homeDirectory packages stateVersion username;
@@ -40,7 +41,6 @@ in {
           ".config/i3/config".source = ./i3_config;
           ".config/i3/i3_swap.bash".source = ./i3_swap.bash;
           ".config/i3status/config".source = ./i3status_config;
-          ".config/fish/fish_variables".source = ./fish_variables;
           ".config/restic/restic_ignore".source = ./restic_ignore;
           ".config/fish/config.fish" = {
             text =

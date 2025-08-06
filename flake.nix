@@ -3,10 +3,10 @@
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-24.11";
-    nixpkgs-new-stable.url = "nixpkgs/c716603a63aca44";
-    unstable.url = "nixpkgs/b30f97d8c32d";
+    nixpkgs-hm.url = "nixpkgs/5ac14523b6ae"; # June 2025
+    nixpkgs-hm-unstable.url = "nixpkgs/7b6929d8b900"; # 2025-08-03
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.05";
+      url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
@@ -17,8 +17,8 @@
   outputs = {
     self,
     nixpkgs,
-    nixpkgs-new-stable,
-    unstable,
+    nixpkgs-hm,
+    nixpkgs-hm-unstable,
     home-manager,
     nix-doom-emacs,
     firefox-addons,
@@ -32,14 +32,13 @@
 
     stateVersion = "23.11"; # See https://nixos.org/manual/nixpkgs/stable for most recent
 
-    pkgs-home-manager = import nixpkgs-new-stable {
+    pkgs-home-manager = import nixpkgs-hm {
       inherit system;
 
       config = {
         allowUnfree = true;
       };
       overlays = [
-        (final: prev: {unstable = unstable.legacyPackages.${prev.system};})
         (
           final: prev: {
             copilot_el_src = prev.fetchFromGitHub {
@@ -51,6 +50,13 @@
           }
         )
       ];
+    };
+    pkgs-hm-unstable = import nixpkgs-hm-unstable {
+      inherit system;
+
+      config = {
+        allowUnfree = true;
+      };
     };
     pkgs = import nixpkgs {
       inherit system;
@@ -70,6 +76,7 @@
       inherit
         homeDirectory
         pkgs-home-manager
+        pkgs-hm-unstable
         stateVersion
         system
         username

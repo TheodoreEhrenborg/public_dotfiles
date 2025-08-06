@@ -117,7 +117,7 @@
        cc                ; C/C++/Obj-C madness
        ;;clojure           ; java with a lisp
        common-lisp       ; if you've seen one lisp, you've seen them all
-       ;;coq               ; proofs-as-programs
+       coq               ; proofs-as-programs
        ;;crystal           ; ruby at the speed of c
        ;;csharp            ; unity, .NET, and mono shenanigans
        ; Apparently `data' means CSV and XML:
@@ -152,7 +152,7 @@
        ;;ocaml             ; an objective camel
        (org ; organize your plain life in plain text
            +roam2 +crypt)
-       ;;php               ; perl's insecure younger brother
+       php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
        (python +lsp +pyright)           ; beautiful is better than ugly

@@ -15,5 +15,4 @@ rm restic_ignore
 rm i3_swap.bash
 rm i3status_config
 rm i3_config
-rm fish_variables
 rm config.fish

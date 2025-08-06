@@ -10,7 +10,6 @@
 
   jujutsu = {
     enable = true;
-    package = pkgs-home-manager.unstable.jujutsu;
     settings.user = {
       name = "Theodore Ehrenborg";
       email = "theodore.ehrenborg@gmail.com";
@@ -61,7 +60,7 @@
               false;
           };
 
-          extensions = with firefox-addons.packages.x86_64-linux; [
+          extensions.packages = with firefox-addons.packages.x86_64-linux; [
             tridactyl
             ublock-origin
             istilldontcareaboutcookies

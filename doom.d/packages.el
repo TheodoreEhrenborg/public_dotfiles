@@ -79,3 +79,5 @@
 (package! pyvenv)
 
 (package! codespaces)
+
+(package! boogie-friends)

@@ -1,5 +1,6 @@
 {
   pkgs-home-manager,
+  pkgs-hm-unstable,
   system,
   nix-search-cli,
   lite,
@@ -24,14 +25,14 @@
       fortune
       cowsay
       julia
-      unstable.ruff
+      ruff
       mypy
       du-dust
       qrencode
       fd
       ripgrep
       restic
-      unstable.rustup # Org babel needs cargo installed with rustup
+      rustup # Org babel needs cargo installed with rustup
       fish
       tldr
       hyperfine
@@ -39,7 +40,7 @@
       feh
       moreutils
       (hiPrio parallel) # GNU parallel. moreutils has a different version
-      unstable.zoxide
+      zoxide
       yt-dlp
       ffmpeg
       (sox.override {
@@ -49,7 +50,7 @@
       pv
       zstd
       jq
-      unstable.mpv # Stable seems to be broken
+      mpv
       pandoc
       poppler_utils # For pdftotext
       ispell
@@ -62,7 +63,7 @@
       pre-commit
       black # Else pre-commit complains
       w3m
-      beancount
+      beancount_2
       ledger
       fava
       tree # /snap/bin/tree didn't work on ash:/data
@@ -73,7 +74,7 @@
       #    firefox
       xclip
       pass
-      kdeconnect
+      plasma5Packages.kdeconnect-kde
       xautolock
       libnotify # to send notifications for upcoming screen lock
       dunst # daemon that displays the notifications
@@ -100,7 +101,7 @@
       gcc # for emacs
       rsync # because otherwise different Ubuntus have different versions
       evcxr
-      unstable.mdbook # Use more recent version to get smart punctuation
+      mdbook
       mdbook-admonish
       nix-search-cli.packages.${system}.default
       rust-script
@@ -119,12 +120,13 @@
       mermaid-cli
       arandr
       ishango
-      unstable.aider-chat
+      aider-chat
+      pkgs-hm-unstable.claude-code
+      pkgs-hm-unstable.ungoogled-chromium
     ]
     ++ (
       if !lite
       then [
-        anki
         zotero
       ]
       else []
