@@ -9,6 +9,8 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    ./modules/git-autopush.nix
+    ./modules/fava.nix
   ];
 
   # Bootloader.
@@ -23,6 +25,14 @@
   # Enable swap on luks
   boot.initrd.luks.devices."luks-cedafc89-45b8-4107-a73c-6a9b05a10507".device = "/dev/disk/by-uuid/cedafc89-45b8-4107-a73c-6a9b05a10507";
   boot.initrd.luks.devices."luks-cedafc89-45b8-4107-a73c-6a9b05a10507".keyFile = "/crypto_keyfile.bin";
+
+  # Additional swap file
+  swapDevices = [
+    {
+      device = "/swapfile";
+      size = 8192; # 8GB in MB
+    }
+  ];
 
   networking.hostName = "lutfisk"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -101,25 +111,13 @@
     description = "Reminder to look away from screen";
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.libnotify}/bin/notify-send -t 20000 202020 -u low";
-    };
-  };
-
-  systemd.user.timers.morning-alarm = {
-    description = "Morning Alarm Timer";
-    timerConfig = {
-      OnCalendar = ["Mon-Fri 06:30" "Sat-Sun 10:00"];
-      AccuracySec = "1s";
-    };
-    wantedBy = ["timers.target"];
-  };
-
-  systemd.user.services.morning-alarm = {
-    description = "Morning Alarm";
-    serviceConfig = {
-      Type = "oneshot";
-      Environment = "PATH=${pkgs.acpi}/bin:${pkgs.wireplumber}/bin:${pkgs.sox}/bin:$PATH";
-      ExecStart = "/home/theo/projects/alarm/target/debug/alarm";
+      ExecStart = "${pkgs.writeShellScript "dim-lights" ''
+              current=$(${pkgs.light}/bin/light -G)
+              target=$(echo "$current * 0.1" | ${pkgs.bc}/bin/bc)
+              ${pkgs.light}/bin/light -S "$target"
+              sleep 20
+              ${pkgs.light}/bin/light -S "$current"
+      ''}";
     };
   };
 
@@ -182,40 +180,6 @@
     };
   };
 
-  # Git auto-push timer - runs less frequently to handle internet issues
-  systemd.user.timers.git-autopush = {
-    description = "Timer for automatic Git pushes";
-    timerConfig = {
-      OnBootSec = "5min";
-      OnUnitActiveSec = "5min"; # Run every 5 minutes
-      AccuracySec = "1s";
-    };
-    wantedBy = ["timers.target"];
-  };
-
-  # Git auto-push service
-  systemd.user.services.git-autopush = {
-    description = "Automatic Git push service";
-    serviceConfig = {
-      Type = "oneshot";
-      TimeoutSec = "30s"; # Timeout after 30 seconds to prevent hanging
-      Environment = "PATH=${pkgs.openssh}/bin:$PATH";
-      ExecStart = "${pkgs.writeShellScript "git-autopush" ''
-        # For org-roam
-        cd $HOME/org/roam || exit 1
-        ${pkgs.git}/bin/git push || true
-
-        # For password-store
-        cd $HOME/.password-store || exit 1
-        ${pkgs.git}/bin/git push || true
-
-        # For ledger
-        cd $HOME/ledger || exit 1
-        ${pkgs.git}/bin/git push || true
-      ''}";
-    };
-  };
-
   # EC2 instance checker timer
   systemd.user.timers.ec2-checker = {
     description = "Timer for checking EC2 instances";
@@ -230,6 +194,17 @@
   # Disk space checker timer
   systemd.user.timers.disk-space-checker = {
     description = "Timer for checking disk space";
+    timerConfig = {
+      OnBootSec = "1min";
+      OnUnitActiveSec = "1min";
+      AccuracySec = "1s";
+    };
+    wantedBy = ["timers.target"];
+  };
+
+  # Battery discharge monitor timer
+  systemd.user.timers.battery-discharge-monitor = {
+    description = "Timer for monitoring battery discharge rate";
     timerConfig = {
       OnBootSec = "1min";
       OnUnitActiveSec = "1min";
@@ -257,6 +232,15 @@
     };
   };
 
+  # Battery discharge monitor service
+  systemd.user.services.battery-discharge-monitor = {
+    description = "Monitor battery discharge rate";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.acpi}/bin/acpi -b";
+    };
+  };
+
   # EC2 instance checker service
   systemd.user.services.ec2-checker = {
     description = "Check for running EC2 instances";
@@ -276,17 +260,6 @@
         fi
       ''}";
     };
-  };
-
-  systemd.user.services.fava = {
-    description = "Fava Beancount service";
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.fava}/bin/fava %h/ledger/transactions.beancount";
-      Restart = "on-failure";
-    };
-    wantedBy = ["default.target"];
-    after = ["graphical-session.target"];
   };
 
   systemd.user.services.camera-checker = {
@@ -310,11 +283,43 @@
     wantedBy = ["timers.target"];
   };
 
+  # Restic backup timer
+  systemd.user.timers.restic-backup = {
+    description = "Timer for restic backup to jattestor";
+    timerConfig = {
+      OnCalendar = "*-*-* 19:00:00";
+      Persistent = true;
+      AccuracySec = "1s";
+    };
+    wantedBy = ["timers.target"];
+  };
+
   systemd.user.services.train-reminder = {
     description = "Train Reminder";
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${pkgs.libnotify}/bin/notify-send -t 0 'check trains'";
+    };
+  };
+
+  # Restic backup service
+  systemd.user.services.restic-backup = {
+    description = "Restic backup to jattestor";
+    serviceConfig = {
+      Type = "oneshot";
+      Environment = "PATH=${pkgs.restic}/bin:$PATH";
+      Nice = 19;
+      ExecStart = "${pkgs.writeShellScript "restic-backup" ''
+        set -e
+        
+        # Source credentials
+        source $HOME/.backblaze/jattestorKeyID
+        source $HOME/.backblaze/jattestorKeySecret
+        export RESTIC_PASSWORD_FILE=$HOME/.backblaze/jattestorResticPassword
+        
+        # Run backup
+        restic -r b2:jattestor:restic-repo-jattestor --verbose backup $HOME/ --exclude-file $HOME/.config/restic/restic_ignore
+      ''}";
     };
   };
 
@@ -358,6 +363,8 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIALa987H4dmEOjWUZPmyr7f9C8idT3jyXGzE4p6F60kU"
     # ipad:
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF6tJDZZH05hF5GD623Xwuk27G374ZDGyhTJ8lYlTmpd"
+    # tripe
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHHzLM9nDboE2/I409h/xQnb/9G/IsWW7rwgmvbPyJOa theo@nixos"
   ];
   programs.mosh.enable = true;
 
@@ -505,4 +512,13 @@
   hardware.bluetooth.powerOnBoot = true;
 
   programs.nix-ld.enable = true;
+
+  # To use cachix
+  nix.settings.trusted-users = [ "root" "theo" ];
+
+  # Tried these but didn't seem to help
+  #nix.daemonCPUSchedPolicy = "idle";
+  #nix.daemonIOSchedClass = "idle";
+  services.tailscale.enable = true;
+
 }

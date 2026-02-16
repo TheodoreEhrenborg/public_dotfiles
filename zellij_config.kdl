@@ -149,6 +149,7 @@ keybinds clear-defaults=true {
             LaunchOrFocusPlugin "file:~/.config/zellij/plugins/room.wasm" {
                 floating true
                 ignore_case true
+                quick_jump true
             }
         }
         bind "Ctrl g" { SwitchToMode "Locked"; }
@@ -337,7 +338,9 @@ copy_command "xclip -selection clipboard" // x11
 // Path to the default editor to use to edit pane scrollbuffer
 // Default: $EDITOR or $VISUAL
 //
-// scrollback_editor "/usr/bin/vim"
+//   scrollback_editor "emacsclient -nw"
+//   scrollback_editor /usr/bin/vim
+//   scrollback_editor "emacsclient -nw +1000000000"
 
 // When attaching to an existing session with other users,
 // should the session be mirrored (true)

@@ -2,6 +2,7 @@
   pkgs-home-manager,
   firefox-addons,
   lite,
+  pkgs-hm-unstable-lite,
 }: {
   direnv = {
     enable = true;
@@ -14,6 +15,7 @@
       name = "Theodore Ehrenborg";
       email = "theodore.ehrenborg@gmail.com";
     };
+    package = pkgs-hm-unstable-lite.jujutsu;
     settings.ui = {
       default-command = "show";
     };

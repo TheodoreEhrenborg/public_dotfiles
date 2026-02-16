@@ -81,3 +81,5 @@
 (package! codespaces)
 
 (package! boogie-friends)
+
+;(package! multi-vterm)

@@ -2,6 +2,7 @@
   homeDirectory,
   pkgs-home-manager,
   pkgs-hm-unstable,
+  pkgs-hm-unstable-lite,
   stateVersion,
   system,
   username,
@@ -11,12 +12,16 @@
   lite,
   public ? true,
 }: let
-  packages = import ./packages.nix {inherit pkgs-home-manager pkgs-hm-unstable system nix-search-cli lite;};
+  packages = import ./packages.nix {inherit pkgs-home-manager pkgs-hm-unstable pkgs-hm-unstable-lite system nix-search-cli lite;};
 in {
   home = {
     inherit homeDirectory packages stateVersion username;
     shellAliases = {
       reload-home-manager-config = "home-manager switch --flake ${builtins.toString ./.}";
+    };
+    pointerCursor = {
+      name = "ComixCursors-Opaque-Red";
+      package = pkgs-home-manager.comixcursors.Opaque_Red;
     };
     file =
       {
@@ -27,12 +32,23 @@ in {
         "copy.bash".source = ./scripts/copy_remote.bash;
         ".config/fish/functions/fish_prompt.fish".source = ./fish_prompt.fish;
         ".doom.d".source = ./doom.d;
+        ".mandarin-data/hsk1.csv".source = pkgs-home-manager.fetchurl {
+          url = "https://raw.githubusercontent.com/plaktos/hsk_csv/615534d31ba085732149416eac668d1b8a1b849e/hsk1.csv";
+          sha256 = "sha256-/WXGsMIhrCdmrT9C4PGeGFH3XNyAZ8SNJm+ajqbKubM=";
+        };
+        ".mandarin-data/hsk2.csv".source = pkgs-home-manager.fetchurl {
+          url = "https://raw.githubusercontent.com/plaktos/hsk_csv/615534d31ba085732149416eac668d1b8a1b849e/hsk2.csv";
+          sha256 = "sha256-/HiARLiucJ+zPJuaD5UWtr9G0TwSa01gNmzgBKWmCR4=";
+        };
         ".vimrc".source = ./vimrc;
         ".visidatarc".source = ./visidatarc;
         # Else visidata complains about the folder not existing:
         ".visidata/.keep".text = "";
         ".wezterm.lua".source = ./wezterm.lua;
         ".julia/config/startup.jl".source = ./julia/config/startup.jl;
+        ".config/nushell/config.nu".source = ./config.nu;
+        ".config/nushell/env.nu".source = ./env.nu;
+        ".claude/CLAUDE.md".source = ./CLAUDE.md;
         #sessionVariables.EMACS_PATH_COPILOT = "${pkgs-home-manager.copilot_el_src}";
       }
       // (
@@ -65,5 +81,5 @@ in {
   };
 
   imports = [nix-doom-emacs.hmModule];
-  programs = import ./programs.nix {inherit pkgs-home-manager firefox-addons lite;};
+  programs = import ./programs.nix {inherit pkgs-home-manager firefox-addons lite pkgs-hm-unstable-lite;};
 }

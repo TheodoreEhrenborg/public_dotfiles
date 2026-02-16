@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Create a unique temporary file
+tmpfile=$(mktemp --suffix=.rs)
+
+# Write stdin to the temporary file
+cat > "$tmpfile"
+
+# Run verusfmt on the temporary file
+verusfmt "$tmpfile"
+
+# Output the formatted result
+cat "$tmpfile"
+
+# Clean up
+rm "$tmpfile"

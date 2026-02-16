@@ -105,6 +105,7 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 (setq doom-theme 'doom-one-light)
+;;(setq doom-theme 'doom-dracula)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -661,6 +662,7 @@ obscure-display-table4))))
 (defun life-mode 'nil)
 (defun blackbox 'nil)
 (defun dunnet 'nil)
+(defun eww 'nil)
 
 
 (map! :n :when org-mode-map :mode org-mode "M-r" 'org-meta-return)
@@ -676,8 +678,7 @@ obscure-display-table4))))
   `(font-lock-doc-face     :foreground ,(doom-lighten 'cyan .0)))
 
 ; Faster reloading of org agenda
-(setq org-agenda-sticky t)
-
+;(setq org-agenda-sticky t)
 
 (setq org-pretty-entities 1)
 
@@ -768,7 +769,7 @@ Read-only text is given the face `my-read-only'."
                                   (list w (window-point w) (window-start w)))
                                 (get-buffer-window-list))))
     (shell-command-on-region (point-min) (point-max)
-                           "/home/theo/projects/macmahon/target/release/rust_calculator" nil t)
+                           "/home/theo/projects/macmahon/target/release/macmahon" nil t)
     (dolist (win-stt original-window-states)
       (set-window-point (car win-stt) (nth 1 win-stt))
       (set-window-start (car win-stt) (nth 2 win-stt)))))
@@ -838,3 +839,155 @@ Read-only text is given the face `my-read-only'."
             (font-lock-add-keywords nil
                                    '(("\\bassume\\b" 0
                                       (list 'face '(:background "red" :foreground "white")) t)))))
+
+(load! "english-chinese-mode")
+
+;; English-Chinese mode keybinding  
+(map! :leader "t t" 'cycle-english-chinese-display)
+
+;; Enable English-Chinese mode and set to Chinese by default in specific modes
+(add-hook 'org-mode-hook (lambda ()
+                           (english-chinese-mode 1)
+                           (setq-local english-chinese-display-mode 'chinese)
+                           (font-lock-add-keywords nil '((english-chinese-fontify)))
+                           (font-lock-flush)))
+
+(add-hook 'python-mode-hook (lambda ()
+                              (english-chinese-mode 1)
+                              (setq-local english-chinese-display-mode 'chinese)
+                              (font-lock-add-keywords nil '((english-chinese-fontify)))
+                              (font-lock-flush)))
+
+(add-hook 'rust-mode-hook (lambda ()
+                            (english-chinese-mode 1)
+                            (setq-local english-chinese-display-mode 'chinese)
+                            (font-lock-add-keywords nil '((english-chinese-fontify)))
+                            (font-lock-flush)))
+
+;(use-package multi-vterm :ensure t)
+
+;(setq vterm-shell "nu")
+(setq vterm-shell "fish")
+
+
+(map! "C-4" 'vterm-send-escape)
+
+; Doesn't work: (map! "C-[" 'vterm-send-escape)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Project-specific vterm
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun my/project-vterm (&optional arg)
+  "Open or switch to a vterm buffer for the current project.
+With prefix argument, open or switch to vterm-project-NAME-ARG."
+  (interactive "P")
+  (let* ((project-root (or (projectile-project-root) default-directory))
+         (project-name (file-name-nondirectory (directory-file-name project-root)))
+         (suffix (if arg (format "%d-" (prefix-numeric-value arg)) ""))
+         (buffer-name (format "*vterm-%s%s*" suffix project-name))
+         (existing-buffer (get-buffer buffer-name)))
+    (if existing-buffer
+        ;; Buffer exists, switch to it
+        (switch-to-buffer existing-buffer)
+      ;; Create new vterm buffer in current window
+      (let* ((default-directory project-root)
+             (display-buffer-alist '((".*" (display-buffer-same-window))))
+             (buf (get-buffer-create buffer-name)))
+        (switch-to-buffer buf)
+        (unless (eq major-mode 'vterm-mode)
+          (vterm-mode)
+          (setq mode-line-format (default-value 'mode-line-format)))
+        buf))))
+
+;; Keybinding for project vterm
+(map! :leader "o t" 'my/project-vterm)
+
+;; Keybinding for project vterm
+;; This doesn't work---doesn't work in dired, and does work in insert mode
+;(evil-global-set-key 'normal  (kbd ";") 'my/project-vterm)
+;  (evil-global-set-key 'normal (kbd ";") 'nil)
+;  (evil-global-set-key 'insert (kbd ";") 'nil)
+;  (key-binding (kbd ";"))
+;(map! ";" nil)
+;  (map! :i ";" #'self-insert-command)
+  (map! :n ";" 'my/project-vterm)
+
+  (map! :map dired-mode-map
+        :n ";" 'my/project-vterm)
+
+
+;; Show modeline in vterm
+(after! vterm
+  (setq vterm-copy-mode-remove-fake-newlines t)
+  (add-hook 'vterm-mode-hook (lambda () (setq mode-line-format (default-value 'mode-line-format)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Lean4 configuration
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Don't start lean server automatically
+(after! lean4-mode
+  (setq lean4-mode-start-lsp-automatically nil)
+
+  ;; Run lean server with higher niceness (lower priority)
+  (setq-default lsp-lean-server-command '("nice" "-n" "15" "lake" "serve"))
+
+  ;; Keybinding to manually start the server: SPC m l for "Lean LSP"
+  (map! :map lean4-mode-map
+        :localleader
+        "l" #'lsp))
+
+;; TODO I'm not sure lean4-mode-start-lsp-automatically is real---maybe I
+;; should delete all this config
+
+(defun clear-buffer-history () (interactive) (setq buffer-undo-list 'nil))
+
+;; 10x default history
+(lossage-size 3000)
+
+; Claude recommended these to fix org agenda freezes, but no luck
+;; (remove-hook 'window-buffer-change-functions #'+doom-dashboard-reload-maybe-h)
+;; (remove-hook '+popup-buffer-mode-hook #'+popup-adjust-margins-h)
+;; (remove-hook 'buffer-list-update-hook #'+magit-mark-stale-buffers-h)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Delayed screenshot
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun org-screenshot-take-delayed ()
+  "Wait 2 seconds then take an org screenshot."
+  (interactive)
+  (message "Taking screenshot in 2 seconds...")
+  (run-at-time "2 sec" nil #'org-screenshot-take))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Static org-agenda snapshot
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun org-agenda-snapshot ()
+  "Generate org-agenda and display it in a static text buffer.
+Always regenerates the snapshot content."
+  (interactive)
+  (let ((snapshot-buffer-name "*Org Agenda Snapshot*"))
+    ;; Generate the agenda in a temporary way
+    (save-window-excursion
+      (org-agenda-list)
+      (org-agenda-fortnight-view)
+      (let ((agenda-content (buffer-string)))
+        ;; Kill the agenda buffer to clean up
+        (org-agenda-quit)
+        ;; Create or update the snapshot buffer
+        (with-current-buffer (get-buffer-create snapshot-buffer-name)
+          (let ((inhibit-read-only t))
+            (erase-buffer)
+            (insert agenda-content)
+            (goto-char (point-min))
+            (view-mode 1)))))
+        ;; Switch to the snapshot buffer
+    (switch-to-buffer snapshot-buffer-name)
+    (message "Org agenda snapshot updated")))
+
+;; Remap SPC n a to use snapshot instead of regular org-agenda
+(map! :leader "n a" 'org-agenda-snapshot)
+

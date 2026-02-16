@@ -1,6 +1,7 @@
 {
   pkgs-home-manager,
   pkgs-hm-unstable,
+  pkgs-hm-unstable-lite,
   system,
   nix-search-cli,
   lite,
@@ -11,8 +12,8 @@
     src = pkgs-home-manager.fetchFromGitHub {
       owner = "TheodoreEhrenborg";
       repo = "ishango";
-      rev = "c9eec98424e24c619006aac5b38148eeee168d19";
-      sha256 = "sha256-PAOHELG15SVArba0pDbyJ66HLMRB+A4oCYZSaEIGWRM=";
+      rev = "bdee6a5495e8f7471d62e5efee04db81b304f688";
+      sha256 = "sha256-g2J2gKmmditEiS6w0zwaGWVsMZoswBYOSaOa84Pv+O0=";
     };
 
     cargoLock = {
@@ -67,7 +68,7 @@
       ledger
       fava
       tree # /snap/bin/tree didn't work on ash:/data
-      vim # Not installed by default on NixOS
+      vim-full # Not installed by default on NixOS
       acpi # Not installed by default on NixOS
       alacritty # For NixOS
       st # For Ubuntu
@@ -121,8 +122,20 @@
       arandr
       ishango
       aider-chat
-      pkgs-hm-unstable.claude-code
+      pkgs-hm-unstable-lite.claude-code
+      pkgs-hm-unstable-lite.framework-tool-tui
       pkgs-hm-unstable.ungoogled-chromium
+      uv
+      dafny
+      cmake
+      gnumake
+      libtool
+      pkgs-hm-unstable.nushell
+      pkgs-hm-unstable.carapace
+      pkgs-hm-unstable.starship
+      ngrok
+      bacon
+      zip
     ]
     ++ (
       if !lite

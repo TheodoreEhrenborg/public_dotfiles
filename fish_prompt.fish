@@ -6,7 +6,6 @@ function fish_prompt
     # - the current path (with prompt_pwd)
     # - date +%X
     # - the current virtual environment, if any
-    # - the current git status, if any, with fish_git_prompt
     # - the current battery state, if any, and if your power cable is unplugged, and if you have "acpi"
     # - current background jobs, if any
 
@@ -22,9 +21,6 @@ function fish_prompt
 
     set -l retc red
     test $status = 0; and set retc green
-
-    set -q __fish_git_prompt_showupstream
-    or set -g __fish_git_prompt_showupstream auto
 
     function _nim_prompt_wrapper
         set retc $argv[1]
@@ -106,11 +102,6 @@ function fish_prompt
     or set -g VIRTUAL_ENV_DISABLE_PROMPT true
     set -q VIRTUAL_ENV
     and _nim_prompt_wrapper $retc V (basename "$VIRTUAL_ENV")
-
-    # git
-    set -l prompt_git (fish_git_prompt '%s')
-    test -n "$prompt_git"
-    and _nim_prompt_wrapper $retc G $prompt_git
 
     # Battery status
     type -q acpi
