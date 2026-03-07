@@ -133,7 +133,7 @@
       pkgs-hm-unstable.nushell
       pkgs-hm-unstable.carapace
       pkgs-hm-unstable.starship
-      ngrok
+      pkgs-hm-unstable.ngrok
       bacon
       zip
     ]

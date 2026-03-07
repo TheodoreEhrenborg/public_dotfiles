@@ -79,3 +79,9 @@ uvx vastai stop instance <8 digit id>
 uvx vastai start instance <8 digit id>
 ```
 
+# Writing NixOS systemd services
+Don't forget to put grep and coreutils in the path. And start the script with set -e
+
+```  
+Environment = "PATH=${pkgs.gnugrep}/bin:${pkgs.coreutils}/bin:...
+```  

@@ -840,29 +840,20 @@ Read-only text is given the face `my-read-only'."
                                    '(("\\bassume\\b" 0
                                       (list 'face '(:background "red" :foreground "white")) t)))))
 
-(load! "english-chinese-mode")
+;; Load zhangchao mode from GitHub (auto-clones if missing)
+(let ((zhangchao-dir (expand-file-name "~/.local/share/zhangchao")))
+  (unless (file-directory-p zhangchao-dir)
+    (shell-command (format "git clone https://github.com/TheodoreEhrenborg/zhangchao.git %s" zhangchao-dir)))
+  (add-to-list 'load-path zhangchao-dir)
+  (require 'zhangchao))
 
-;; English-Chinese mode keybinding  
-(map! :leader "t t" 'cycle-english-chinese-display)
+;; zhangchao keybinding
+(map! :leader "t t" 'zhangchao-cycle-display)
 
-;; Enable English-Chinese mode and set to Chinese by default in specific modes
-(add-hook 'org-mode-hook (lambda ()
-                           (english-chinese-mode 1)
-                           (setq-local english-chinese-display-mode 'chinese)
-                           (font-lock-add-keywords nil '((english-chinese-fontify)))
-                           (font-lock-flush)))
-
-(add-hook 'python-mode-hook (lambda ()
-                              (english-chinese-mode 1)
-                              (setq-local english-chinese-display-mode 'chinese)
-                              (font-lock-add-keywords nil '((english-chinese-fontify)))
-                              (font-lock-flush)))
-
-(add-hook 'rust-mode-hook (lambda ()
-                            (english-chinese-mode 1)
-                            (setq-local english-chinese-display-mode 'chinese)
-                            (font-lock-add-keywords nil '((english-chinese-fontify)))
-                            (font-lock-flush)))
+;; Enable zhangchao mode in specific modes
+(add-hook 'org-mode-hook 'zhangchao-mode)
+(add-hook 'python-mode-hook 'zhangchao-mode)
+(add-hook 'rust-mode-hook 'zhangchao-mode)
 
 ;(use-package multi-vterm :ensure t)
 

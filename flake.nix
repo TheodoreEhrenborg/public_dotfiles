@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-24.11";
-    nixpkgs-tripe.url = "nixpkgs/daf6dc47aa4b44791372d6139ab7b25269184d55"; # 25.05 from Oct 31 2025
+    nixpkgs-tripe.url = "nixpkgs/fa56d7d6de78f5a7f997b0ea2bc6efd5868ad9e8"; # 25.11 from 2026 Feb 17
     nixpkgs-hm.url = "nixpkgs/5ac14523b6ae"; # June 2025
     nixpkgs-hm-unstable.url = "nixpkgs/aca2499b7917"; # 2025-08-29
     nixpkgs-hm-unstable-lite.url = "nixpkgs/2343bbb58f99"; # Feb 12 2026

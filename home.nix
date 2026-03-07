@@ -32,14 +32,6 @@ in {
         "copy.bash".source = ./scripts/copy_remote.bash;
         ".config/fish/functions/fish_prompt.fish".source = ./fish_prompt.fish;
         ".doom.d".source = ./doom.d;
-        ".mandarin-data/hsk1.csv".source = pkgs-home-manager.fetchurl {
-          url = "https://raw.githubusercontent.com/plaktos/hsk_csv/615534d31ba085732149416eac668d1b8a1b849e/hsk1.csv";
-          sha256 = "sha256-/WXGsMIhrCdmrT9C4PGeGFH3XNyAZ8SNJm+ajqbKubM=";
-        };
-        ".mandarin-data/hsk2.csv".source = pkgs-home-manager.fetchurl {
-          url = "https://raw.githubusercontent.com/plaktos/hsk_csv/615534d31ba085732149416eac668d1b8a1b849e/hsk2.csv";
-          sha256 = "sha256-/HiARLiucJ+zPJuaD5UWtr9G0TwSa01gNmzgBKWmCR4=";
-        };
         ".vimrc".source = ./vimrc;
         ".visidatarc".source = ./visidatarc;
         # Else visidata complains about the folder not existing:

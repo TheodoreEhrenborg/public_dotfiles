@@ -18,9 +18,98 @@
 
   # This didn't fix the issue where I had to move the mouse to see updates to terminal/emacs,
   # but I guess it can't hurt
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages_6_18;
   # This fixed that issue
   boot.kernelParams = [ "amdgpu.dcdebugmask=0x10" "amdgpu.gttsize=25600" "ttm.pages_limit=7077888" ];
+
+  # See https://github.com/ARitz-Cracker/nixos/blob/af162805a25f39460b702bfa2af467386faf637f/components/hardware_workarounds/mt7925e.nix
+  # and https://zbowling.github.io/mt7925/
+  boot.kernelPatches = [
+      {
+        name = "0001-wifi-mt76-mt7925-fix-potential-deadlock-in-mt7925_ro.patch";
+        patch = pkgs.fetchurl {
+          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0001-wifi-mt76-mt7925-fix-potential-deadlock-in-mt7925_ro.patch";
+          sha256 = "sha256-gKXixC+7avlJKO0fdp0QV9sNS5gOtD9OW9gdRHLwRnI=";
+        };
+      }
+      {
+        name = "0002-wifi-mt76-fix-list-corruption-in-mt76_wcid_cleanup.patch";
+        patch = pkgs.fetchurl {
+          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0002-wifi-mt76-fix-list-corruption-in-mt76_wcid_cleanup.patch";
+          sha256 = "sha256-i5ZnuWqds9MoZSMPnNsC7s1amR3Kc5nSvYax7WRbwSA=";
+        };
+      }
+      {
+        name = "0003-wifi-mt76-mt792x-fix-NULL-pointer-and-firmware-reloa.patch";
+        patch = pkgs.fetchurl {
+          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0003-wifi-mt76-mt792x-fix-NULL-pointer-and-firmware-reloa.patch";
+          sha256 = "sha256-oid8kSIWYqahkhV4myy6sP+jMI1SMHyRDrKLdZ7FVCg=";
+        };
+      }
+      {
+        name = "0004-wifi-mt76-mt7921-add-mutex-protection-in-critical-pa.patch";
+        patch = pkgs.fetchurl {
+          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0004-wifi-mt76-mt7921-add-mutex-protection-in-critical-pa.patch";
+          sha256 = "sha256-iRRqJ0E06Df0rUz3pyxXeMPzeRn89L2qZxdCI66gsG0=";
+        };
+      }
+      {
+        name = "0005-wifi-mt76-mt7925-add-comprehensive-NULL-pointer-prot.patch";
+        patch = pkgs.fetchurl {
+          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0005-wifi-mt76-mt7925-add-comprehensive-NULL-pointer-prot.patch";
+          sha256 = "sha256-BfO4HEeWxGNXx7efPaFFcbAGkcMQCbN0nAzUhrlxrB8=";
+        };
+      }
+      {
+        name = "0006-wifi-mt76-mt7925-add-mutex-protection-in-critical-pa.patch";
+        patch = pkgs.fetchurl {
+          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0006-wifi-mt76-mt7925-add-mutex-protection-in-critical-pa.patch";
+          sha256 = "sha256-cUlQoyUrRZUuRXpkLV7gcvQWgWTjC9WmXuvujWhFPtU=";
+        };
+      }
+      {
+        name = "0007-wifi-mt76-mt7925-add-MCU-command-error-handling.patch";
+        patch = pkgs.fetchurl {
+          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0007-wifi-mt76-mt7925-add-MCU-command-error-handling.patch";
+          sha256 = "sha256-08/86bLgmXH3BYw4VgwK0L3hwB130feR8qeKtawGgXU=";
+        };
+      }
+      {
+        name = "0008-wifi-mt76-mt7925-add-lockdep-assertions-for-mutex-ve.patch";
+        patch = pkgs.fetchurl {
+          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0008-wifi-mt76-mt7925-add-lockdep-assertions-for-mutex-ve.patch";
+          sha256 = "sha256-kJSCoYNqkeUVwGuyaUzcEHGMYxIaZSF4kK8kzJSYYJQ=";
+        };
+      }
+      {
+        name = "0009-wifi-mt76-mt7925-fix-MLO-roaming-and-ROC-setup-issue.patch";
+        patch = pkgs.fetchurl {
+          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0009-wifi-mt76-mt7925-fix-MLO-roaming-and-ROC-setup-issue.patch";
+          sha256 = "sha256-+pHxkdw8iFDUfQYILdvFGW++uL5j53j1/S0Emw4qLe4=";
+        };
+      }
+      {
+        name = "0010-wifi-mt76-mt7925-fix-BA-session-teardown-during-beac.patch";
+        patch = pkgs.fetchurl {
+          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0010-wifi-mt76-mt7925-fix-BA-session-teardown-during-beac.patch";
+          sha256 = "sha256-QJJgewPxRTqaMvhRTQ5tXFe6sNx7eVtBu7k+rWSnVk4=";
+        };
+      }
+      {
+        name = "0011-wifi-mt76-mt7925-fix-ROC-deadlocks-and-race-conditio.patch";
+        patch = pkgs.fetchurl {
+          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0011-wifi-mt76-mt7925-fix-ROC-deadlocks-and-race-conditio.patch";
+          sha256 = "sha256-8bRFyCCZ3AZuWkwDTGfeS8U/3o0pCRRX/PeY2nx4OCo=";
+        };
+      }
+      {
+        name = "0012-wifi-mt76-mt7925-fix-double-wcid-initialization-race.patch";
+        patch = pkgs.fetchurl {
+          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0012-wifi-mt76-mt7925-fix-double-wcid-initialization-race.patch";
+          sha256 = "sha256-Ro4zxZ162iPNi20Kkwk5qWrqqpx7XuUfC+O+EFg78dY=";
+        };
+      }
+    ];
 
   boot.initrd.luks.devices."luks-94672f5b-1f26-4f8e-8904-75caf56c62ab".device = "/dev/disk/by-uuid/94672f5b-1f26-4f8e-8904-75caf56c62ab";
   networking.hostName = "tripe"; # Define your hostname.
@@ -181,7 +270,7 @@
   fonts.packages = with pkgs; [
     noto-fonts
     noto-fonts-cjk-sans
-    noto-fonts-emoji
+    noto-fonts-color-emoji
     liberation_ttf
     fira-code
     fira-code-symbols
@@ -195,6 +284,12 @@
   services.printing.enable = true;
   # Canon drivers
   services.printing.drivers = [pkgs.cnijfilter2];
+
+  # Avahi for network printer discovery
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+  };
 
   programs.steam = {
     enable = true;
@@ -268,23 +363,6 @@
     };
   };
 
-  systemd.user.timers.train-reminder = {
-    description = "Train Reminder Timer";
-    timerConfig = {
-      OnCalendar = "Mon-Fri 17:00";
-      AccuracySec = "1s";
-    };
-    wantedBy = ["timers.target"];
-  };
-
-
-  systemd.user.services.train-reminder = {
-    description = "Train Reminder";
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.libnotify}/bin/notify-send -t 0 'check trains'";
-    };
-  };
 
 
   # Vast.ai instance checker timer
@@ -331,6 +409,34 @@
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${pkgs.acpi}/bin/acpi -b";
+    };
+  };
+
+  # WiFi network checker timer
+  systemd.user.timers.wifi-checker = {
+    description = "Timer for checking WiFi network";
+    timerConfig = {
+      OnBootSec = "1min";
+      OnUnitActiveSec = "1min";
+      AccuracySec = "1s";
+    };
+    wantedBy = ["timers.target"];
+  };
+
+  # WiFi network checker service
+  systemd.user.services.wifi-checker = {
+    description = "Check WiFi network and notify if on wrong network";
+    serviceConfig = {
+      Type = "oneshot";
+      Environment = "PATH=${pkgs.gnugrep}/bin:${pkgs.coreutils}/bin:${pkgs.networkmanager}/bin:${pkgs.libnotify}/bin:$PATH";
+      ExecStart = "${pkgs.writeShellScript "check-wifi" ''
+        set -e
+        current_ssid=$(nmcli -t -f active,ssid dev wifi | grep '^yes' | cut -d':' -f2)
+        echo $current_ssid
+        if [ "$current_ssid" = "ALHN-6CF4_EXT" ] || [ "$current_ssid" = "ALHN-6CF4" ]; then
+          notify-send -t 10000 "Wrong WiFi Network?" "You're not on ALHN-6CF4_EXT001"
+        fi
+      ''}";
     };
   };
 
@@ -411,6 +517,16 @@
       wantedBy = ["default.target"];
       after = ["graphical-session.target"];
     };
+
+  # Framework charge limit service
+  systemd.services.framework-charge-limit = {
+    description = "Set Framework battery charge limit";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.framework-tool}/bin/framework_tool --charge-limit 75";
+    };
+    wantedBy = ["multi-user.target"];
+  };
 
 
   # Restic backup timer
