@@ -23,12 +23,8 @@
   myPackages = with pkgs-home-manager;
     [
       (import ./python-packages.nix {pkgs-home-manager = pkgs-home-manager;})
-      fortune
-      cowsay
-      julia
       ruff
-      mypy
-      du-dust
+      dust
       qrencode
       fd
       ripgrep
@@ -40,42 +36,27 @@
       py-spy
       feh
       moreutils
-      (hiPrio parallel) # GNU parallel. moreutils has a different version
+      (pkgs-home-manager.lib.hiPrio parallel) # GNU parallel. moreutils has a different version
       zoxide
-      yt-dlp
-      ffmpeg
-      (sox.override {
-        enableLame = true;
-      })
       iotop
       pv
       zstd
       jq
       mpv
       pandoc
-      poppler_utils # For pdftotext
+      poppler-utils # For pdftotext
       ispell
-      gcal
       fzf
       htop
       bat
-      librsvg
-      nodejs # For copilot.el
-      pre-commit
-      black # Else pre-commit complains
-      w3m
       beancount_2
-      ledger
       fava
       tree # /snap/bin/tree didn't work on ash:/data
       vim-full # Not installed by default on NixOS
       acpi # Not installed by default on NixOS
-      alacritty # For NixOS
       st # For Ubuntu
-      #    firefox
       xclip
       pass
-      plasma5Packages.kdeconnect-kde
       xautolock
       libnotify # to send notifications for upcoming screen lock
       dunst # daemon that displays the notifications
@@ -83,7 +64,6 @@
       psmisc # for killall
       zathura
       scrot # screenshots
-      zellij
       elan
       file
       github-cli
@@ -91,11 +71,8 @@
       wget
       unzip
       rlwrap
-      viu
       awscli2
       chafa
-      wezterm
-      lsix
       ghostscript
       gnupg
       sqlite # for emacs
@@ -108,34 +85,32 @@
       rust-script
       timer
       shellcheck
-      sl
-      ollama
       difftastic
       hwatch
-      shfmt
       iftop
       pavucontrol
       lsof # for camera checker
       pyright
       zbar
-      mermaid-cli
       arandr
       ishango
-      aider-chat
+      pkgs-hm-unstable.ungoogled-chromium
       pkgs-hm-unstable-lite.claude-code
       pkgs-hm-unstable-lite.framework-tool-tui
-      pkgs-hm-unstable.ungoogled-chromium
       uv
       dafny
       cmake
       gnumake
       libtool
-      pkgs-hm-unstable.nushell
-      pkgs-hm-unstable.carapace
-      pkgs-hm-unstable.starship
       pkgs-hm-unstable.ngrok
       bacon
       zip
+      bubblewrap
+      starlark-rust
+      janet
+      jpm
+      bun
+      imagemagick
     ]
     ++ (
       if !lite

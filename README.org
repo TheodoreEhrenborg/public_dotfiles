@@ -3,8 +3,8 @@ This repo does two things:
 - Deploys home-manager via ~home-manager switch --flake ~/dotfiles~
   - See ~home.nix~ and ~packages.nix~ to get an idea of what this does
   - This should just work on x86 Ubuntu machines (although it assumes your username is ~theo~).
-- Deploys NixOS via ~sudo nixos-rebuild switch --flake ~/dotfiles#lutfisk~
-  - See ~configuration.nix~
+- Deploys NixOS on tripe via ~sudo nixos-rebuild switch --flake ~/dotfiles#tripe~
+  - See ~tripe/configuration.nix~
   - This won't quite work on an arbitrary machine---some of the systemd jobs are impure.
 ** Installing nix
 - https://zero-to-nix.com/start/install

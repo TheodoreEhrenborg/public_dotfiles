@@ -22,12 +22,14 @@
   };
   git = {
     enable = true;
-    userEmail = "theodore.ehrenborg@gmail.com";
-    userName = "TheodoreEhrenborg";
-    lfs.enable = true;
-    difftastic = {
-      enable = false;
+    settings.user = {
+      email = "theodore.ehrenborg@gmail.com";
+      name = "TheodoreEhrenborg";
     };
+    lfs.enable = true;
+  };
+  difftastic = {
+    enable = false;
   };
   home-manager = {
     enable = true;
@@ -39,6 +41,7 @@
     if !lite
     then {
       enable = true;
+      configPath = ".mozilla/firefox";
       profiles = {
         default = {
           isDefault = true;

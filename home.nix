@@ -6,7 +6,6 @@
   stateVersion,
   system,
   username,
-  nix-doom-emacs,
   firefox-addons,
   nix-search-cli,
   lite,
@@ -72,6 +71,5 @@ in {
     };
   };
 
-  imports = [nix-doom-emacs.hmModule];
   programs = import ./programs.nix {inherit pkgs-home-manager firefox-addons lite pkgs-hm-unstable-lite;};
 }

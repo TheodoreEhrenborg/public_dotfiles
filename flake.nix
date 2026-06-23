@@ -2,16 +2,15 @@
   description = "Home Manager configuration";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-24.11";
-    nixpkgs-tripe.url = "nixpkgs/fa56d7d6de78f5a7f997b0ea2bc6efd5868ad9e8"; # 25.11 from 2026 Feb 17
-    nixpkgs-hm.url = "nixpkgs/5ac14523b6ae"; # June 2025
-    nixpkgs-hm-unstable.url = "nixpkgs/aca2499b7917"; # 2025-08-29
-    nixpkgs-hm-unstable-lite.url = "nixpkgs/2343bbb58f99"; # Feb 12 2026
+    nixpkgs.url = "nixpkgs/3d8f0f3f72a6"; # 2026-05-24
+    nixpkgs-tripe.url = "nixpkgs/3d8f0f3f72a6"; # 2026-05-24
+    nixpkgs-hm.url = "nixpkgs/3d8f0f3f72a6"; # 2026-05-24
+    nixpkgs-hm-unstable.url = "nixpkgs/3d8f0f3f72a6"; # 2026-05-24
+    nixpkgs-hm-unstable-lite.url = "nixpkgs/3d8f0f3f72a6"; # 2026-05-24
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-doom-emacs.url = "github:nix-community/nix-doom-emacs";
     firefox-addons.url = gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons;
     nix-search-cli.url = "github:peterldowns/nix-search-cli";
   };
@@ -24,7 +23,6 @@
     nixpkgs-hm-unstable,
     nixpkgs-hm-unstable-lite,
     home-manager,
-    nix-doom-emacs,
     firefox-addons,
     nix-search-cli,
   }: let
@@ -92,7 +90,6 @@
         stateVersion
         system
         username
-        nix-doom-emacs
         firefox-addons
         nix-search-cli
         ;
@@ -107,11 +104,6 @@
     };
 
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
-
-    nixosConfigurations.lutfisk = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [./configuration.nix];
-    };
 
     nixosConfigurations.tripe = nixpkgs-tripe.lib.nixosSystem {
       system = "x86_64-linux";

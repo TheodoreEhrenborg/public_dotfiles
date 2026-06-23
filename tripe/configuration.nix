@@ -18,104 +18,17 @@
 
   # This didn't fix the issue where I had to move the mouse to see updates to terminal/emacs,
   # but I guess it can't hurt
-  boot.kernelPackages = pkgs.linuxPackages_6_18;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   # This fixed that issue
-  boot.kernelParams = [ "amdgpu.dcdebugmask=0x10" "amdgpu.gttsize=25600" "ttm.pages_limit=7077888" ];
-
-  # See https://github.com/ARitz-Cracker/nixos/blob/af162805a25f39460b702bfa2af467386faf637f/components/hardware_workarounds/mt7925e.nix
-  # and https://zbowling.github.io/mt7925/
-  boot.kernelPatches = [
-      {
-        name = "0001-wifi-mt76-mt7925-fix-potential-deadlock-in-mt7925_ro.patch";
-        patch = pkgs.fetchurl {
-          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0001-wifi-mt76-mt7925-fix-potential-deadlock-in-mt7925_ro.patch";
-          sha256 = "sha256-gKXixC+7avlJKO0fdp0QV9sNS5gOtD9OW9gdRHLwRnI=";
-        };
-      }
-      {
-        name = "0002-wifi-mt76-fix-list-corruption-in-mt76_wcid_cleanup.patch";
-        patch = pkgs.fetchurl {
-          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0002-wifi-mt76-fix-list-corruption-in-mt76_wcid_cleanup.patch";
-          sha256 = "sha256-i5ZnuWqds9MoZSMPnNsC7s1amR3Kc5nSvYax7WRbwSA=";
-        };
-      }
-      {
-        name = "0003-wifi-mt76-mt792x-fix-NULL-pointer-and-firmware-reloa.patch";
-        patch = pkgs.fetchurl {
-          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0003-wifi-mt76-mt792x-fix-NULL-pointer-and-firmware-reloa.patch";
-          sha256 = "sha256-oid8kSIWYqahkhV4myy6sP+jMI1SMHyRDrKLdZ7FVCg=";
-        };
-      }
-      {
-        name = "0004-wifi-mt76-mt7921-add-mutex-protection-in-critical-pa.patch";
-        patch = pkgs.fetchurl {
-          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0004-wifi-mt76-mt7921-add-mutex-protection-in-critical-pa.patch";
-          sha256 = "sha256-iRRqJ0E06Df0rUz3pyxXeMPzeRn89L2qZxdCI66gsG0=";
-        };
-      }
-      {
-        name = "0005-wifi-mt76-mt7925-add-comprehensive-NULL-pointer-prot.patch";
-        patch = pkgs.fetchurl {
-          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0005-wifi-mt76-mt7925-add-comprehensive-NULL-pointer-prot.patch";
-          sha256 = "sha256-BfO4HEeWxGNXx7efPaFFcbAGkcMQCbN0nAzUhrlxrB8=";
-        };
-      }
-      {
-        name = "0006-wifi-mt76-mt7925-add-mutex-protection-in-critical-pa.patch";
-        patch = pkgs.fetchurl {
-          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0006-wifi-mt76-mt7925-add-mutex-protection-in-critical-pa.patch";
-          sha256 = "sha256-cUlQoyUrRZUuRXpkLV7gcvQWgWTjC9WmXuvujWhFPtU=";
-        };
-      }
-      {
-        name = "0007-wifi-mt76-mt7925-add-MCU-command-error-handling.patch";
-        patch = pkgs.fetchurl {
-          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0007-wifi-mt76-mt7925-add-MCU-command-error-handling.patch";
-          sha256 = "sha256-08/86bLgmXH3BYw4VgwK0L3hwB130feR8qeKtawGgXU=";
-        };
-      }
-      {
-        name = "0008-wifi-mt76-mt7925-add-lockdep-assertions-for-mutex-ve.patch";
-        patch = pkgs.fetchurl {
-          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0008-wifi-mt76-mt7925-add-lockdep-assertions-for-mutex-ve.patch";
-          sha256 = "sha256-kJSCoYNqkeUVwGuyaUzcEHGMYxIaZSF4kK8kzJSYYJQ=";
-        };
-      }
-      {
-        name = "0009-wifi-mt76-mt7925-fix-MLO-roaming-and-ROC-setup-issue.patch";
-        patch = pkgs.fetchurl {
-          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0009-wifi-mt76-mt7925-fix-MLO-roaming-and-ROC-setup-issue.patch";
-          sha256 = "sha256-+pHxkdw8iFDUfQYILdvFGW++uL5j53j1/S0Emw4qLe4=";
-        };
-      }
-      {
-        name = "0010-wifi-mt76-mt7925-fix-BA-session-teardown-during-beac.patch";
-        patch = pkgs.fetchurl {
-          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0010-wifi-mt76-mt7925-fix-BA-session-teardown-during-beac.patch";
-          sha256 = "sha256-QJJgewPxRTqaMvhRTQ5tXFe6sNx7eVtBu7k+rWSnVk4=";
-        };
-      }
-      {
-        name = "0011-wifi-mt76-mt7925-fix-ROC-deadlocks-and-race-conditio.patch";
-        patch = pkgs.fetchurl {
-          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0011-wifi-mt76-mt7925-fix-ROC-deadlocks-and-race-conditio.patch";
-          sha256 = "sha256-8bRFyCCZ3AZuWkwDTGfeS8U/3o0pCRRX/PeY2nx4OCo=";
-        };
-      }
-      {
-        name = "0012-wifi-mt76-mt7925-fix-double-wcid-initialization-race.patch";
-        patch = pkgs.fetchurl {
-          url = "https://raw.githubusercontent.com/zbowling/mt7925/a00b48b86fc230437e88a798719b27631df18e9a/kernels/6.18/0012-wifi-mt76-mt7925-fix-double-wcid-initialization-race.patch";
-          sha256 = "sha256-Ro4zxZ162iPNi20Kkwk5qWrqqpx7XuUfC+O+EFg78dY=";
-        };
-      }
-    ];
+  # Reduced TTM limits to prevent GPU memory deadlock during heavy compilation (2026-03-21)
+  boot.kernelParams = [ "amdgpu.dcdebugmask=0x10" "amdgpu.gttsize=8192" "ttm.pages_limit=2097152" ];
 
   boot.initrd.luks.devices."luks-94672f5b-1f26-4f8e-8904-75caf56c62ab".device = "/dev/disk/by-uuid/94672f5b-1f26-4f8e-8904-75caf56c62ab";
   networking.hostName = "tripe"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
-
+  services.mullvad-vpn.enable = true;
+  services.resolved.enable = true;
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -165,8 +78,8 @@
     anki
     teams-for-linux
     distrobox
+    brightnessctl
   ];
-  programs.light.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -263,7 +176,7 @@
   security.sudo.extraRules = [
     {
       groups = ["wheel"];
-      commands = ["${pkgs.light}/bin/light"];
+      commands = ["${pkgs.brightnessctl}/bin/brightnessctl"];
     }
   ];
 
@@ -342,10 +255,10 @@
                 exit 0
               fi
 
-              current=$(${pkgs.light}/bin/light -G)
+              current=$(${pkgs.brightnessctl}/bin/brightnessctl get)
               target=$(echo "$current * 0.1" | ${pkgs.bc}/bin/bc)
               echo Beginning dimming
-              ${pkgs.light}/bin/light -S "$target"
+              ${pkgs.brightnessctl}/bin/brightnessctl set "$target"
 
               # `sleep 20` won't run while the laptop is closed,
               # so the laptop would often be dim on lid raise
@@ -357,7 +270,7 @@
                 sleep 0.5
               done
 
-              ${pkgs.light}/bin/light -S "$current"
+              ${pkgs.brightnessctl}/bin/brightnessctl set "$current"
               echo Done with dimming
       ''}";
     };
@@ -490,6 +403,97 @@
   };
 
 
+  # Kill browsers on Sunday 4pm-7pm EST
+  systemd.user.timers.kill-browsers-sunday-est = {
+    description = "Timer to kill browsers on Sunday 4pm-7pm EST";
+    timerConfig = {
+      OnCalendar = "*-*-* *:*:0/5";
+      AccuracySec = "1s";
+    };
+    wantedBy = ["timers.target"];
+  };
+
+  systemd.user.services.kill-browsers-sunday-est = {
+    description = "Kill Firefox and Chromium on Sunday 4pm-7pm EST";
+    serviceConfig = {
+      Type = "oneshot";
+      Environment = "PATH=${pkgs.procps}/bin:${pkgs.coreutils}/bin:$PATH";
+      ExecStart = "${pkgs.writeShellScript "kill-browsers-sunday-est" ''
+        set -e
+
+        # Get current day of week in EST (0=Sunday)
+        est_day=$(TZ=America/New_York date +%w)
+
+        # Get current hour in EST
+        est_hour=$(TZ=America/New_York date +%H)
+
+        echo "kill-browsers-sunday-est: Day=$est_day Hour=$est_hour"
+
+        # Check if it's Sunday (0)
+        if [ "$est_day" -ne 0 ]; then
+          echo "kill-browsers-sunday-est: Not Sunday, exiting"
+          exit 0
+        fi
+
+        # Check if between 16:00 and 18:59 EST (16 <= hour < 19)
+        est_hour_num=$((10#$est_hour))
+        if [ "$est_hour_num" -lt 16 ] || [ "$est_hour_num" -ge 19 ]; then
+          echo "kill-browsers-sunday-est: Not in time range (16:00-18:59), exiting"
+          exit 0
+        fi
+
+        # Kill browsers
+        echo "kill-browsers-sunday-est: Killing browsers"
+        pkill -9 firefox || true
+        pkill -9 chromium || true
+        echo "kill-browsers-sunday-est: Done"
+      ''}";
+    };
+  };
+
+  # Kill browsers daily 23:00-00:30 local time
+  systemd.user.timers.kill-browsers-night = {
+    description = "Timer to kill browsers from 23:00 to 00:30";
+    timerConfig = {
+      OnCalendar = "*-*-* *:*:0/5";
+      AccuracySec = "1s";
+    };
+    wantedBy = ["timers.target"];
+  };
+
+  systemd.user.services.kill-browsers-night = {
+    description = "Kill Firefox and Chromium from 23:00 to 00:30";
+    serviceConfig = {
+      Type = "oneshot";
+      Environment = "PATH=${pkgs.procps}/bin:${pkgs.coreutils}/bin:$PATH";
+      ExecStart = "${pkgs.writeShellScript "kill-browsers-night" ''
+        set -e
+
+        # Get current hour and minute
+        current_hour=$(date +%H)
+        current_minute=$(date +%M)
+
+        # Convert to minutes since midnight
+        current_time=$((10#$current_hour * 60 + 10#$current_minute))
+
+        echo "kill-browsers-night: Time=$current_hour:$current_minute (minutes=$current_time)"
+
+        # Check if in range: >= 23:00 (1380 minutes) OR < 00:30 (30 minutes)
+        if [ "$current_time" -lt 1380 ] && [ "$current_time" -ge 30 ]; then
+          echo "kill-browsers-night: Not in time range (23:00-00:30), exiting"
+          exit 0
+        fi
+
+        # Kill browsers
+        echo "kill-browsers-night: Killing browsers"
+        pkill -9 firefox || true
+        pkill -9 chromium || true
+        echo "kill-browsers-night: Done"
+      ''}";
+    };
+  };
+
+
   systemd.user.services.battery-checker =
     let battery-checker-pkg = pkgs.rustPlatform.buildRustPackage rec {
       pname = "battery_checker";
@@ -560,4 +564,35 @@
       ''}";
     };
   };
+
+  # Railway check-in timer
+  systemd.user.timers.railway-checkin = {
+    description = "Timer for railway check-in via claude";
+    timerConfig = {
+      OnCalendar = [
+        "Mon..Fri *-*-* 08:05:00"
+        "Mon..Fri *-*-* 17:54:00"
+      ];
+      AccuracySec = "1s";
+    };
+    wantedBy = ["timers.target"];
+  };
+
+  # Railway check-in service
+  systemd.user.services.railway-checkin =
+    let sleep-claude = pkgs.writeShellScriptBin "sleep-claude" ''
+      sleep "$@"
+    '';
+    in {
+      description = "Run claude for railway check-in";
+      serviceConfig = {
+        Type = "oneshot";
+        Environment = "PATH=${sleep-claude}/bin:/home/theo/.nix-profile/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin:$PATH";
+        ExecStart = "${pkgs.writeShellScript "railway-checkin" ''
+          set -e
+          cd $HOME/projects/railway-checkin
+          claude --channels plugin:telegram@claude-plugins-official --model sonnet "Follow instructions in CLAUDE.md. Today is $(${pkgs.coreutils}/bin/date)"
+        ''}";
+      };
+    };
 }

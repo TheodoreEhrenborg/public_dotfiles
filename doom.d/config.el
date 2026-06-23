@@ -974,6 +974,7 @@ Always regenerates the snapshot content."
             (erase-buffer)
             (insert agenda-content)
             (goto-char (point-min))
+            (setq-local doom-real-buffer-p t)
             (view-mode 1)))))
         ;; Switch to the snapshot buffer
     (switch-to-buffer snapshot-buffer-name)
@@ -981,4 +982,42 @@ Always regenerates the snapshot content."
 
 ;; Remap SPC n a to use snapshot instead of regular org-agenda
 (map! :leader "n a" 'org-agenda-snapshot)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;; Jump from agenda line to org entry
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun my/agenda-line-jump-to-entry ()
+  "Jump from an agenda-like line to the matching org entry.
+Parses lines of the form: FILEID: ... TODO search text
+Finds a file under `default-directory' whose name starts with FILEID,
+then jumps to the first line containing the TODO text."
+  (interactive)
+  (let* ((line (string-trim (thing-at-point 'line t)))
+         (colon-pos (string-match ":" line))
+         (_ (unless colon-pos
+              (user-error "No ':' found in current line")))
+         (file-id (string-trim (substring line 0 colon-pos)))
+         (_ (when (string-empty-p file-id)
+              (user-error "Empty file identifier before ':'")))
+         (todo-pos (string-match "TODO" line))
+         (_ (unless todo-pos
+              (user-error "No 'TODO' found in current line")))
+         (search-str (string-trim (substring line todo-pos)))
+         (target (car (split-string
+                       (shell-command-to-string
+                        (format "fd --type f --base-directory %s -g '%s*' --max-results 1"
+                                (shell-quote-argument default-directory)
+                                file-id))
+                       "\n" t))))
+    (unless target
+      (user-error "No file starting with '%s' found under %s"
+                  file-id default-directory))
+    (find-file (expand-file-name target default-directory))
+    (goto-char (point-min))
+    (unless (search-forward search-str nil t)
+      (user-error "Could not find '%s' in %s" search-str target))
+    (beginning-of-line)))
+
+(map! :leader "n j" #'my/agenda-line-jump-to-entry)
 
