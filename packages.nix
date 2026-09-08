@@ -111,6 +111,7 @@
       jpm
       bun
       imagemagick
+      google-chrome
     ]
     ++ (
       if !lite

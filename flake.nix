@@ -2,11 +2,11 @@
   description = "Home Manager configuration";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/3d8f0f3f72a6"; # 2026-05-24
+    nixpkgs.url = "nixpkgs/3d8f0f3f72a6"; # 2026-05-24. Used for top level organization and small things
     nixpkgs-tripe.url = "nixpkgs/3d8f0f3f72a6"; # 2026-05-24
-    nixpkgs-hm.url = "nixpkgs/3d8f0f3f72a6"; # 2026-05-24
-    nixpkgs-hm-unstable.url = "nixpkgs/3d8f0f3f72a6"; # 2026-05-24
-    nixpkgs-hm-unstable-lite.url = "nixpkgs/3d8f0f3f72a6"; # 2026-05-24
+    nixpkgs-hm.url = "nixpkgs/bd829e780195c7db2fe1eaaf8db5567678eb4c7f"; # 2026-09-01
+    nixpkgs-hm-unstable.url = "nixpkgs/bd829e780195c7db2fe1eaaf8db5567678eb4c7f"; # 2026-09-01
+    nixpkgs-hm-unstable-lite.url = "nixpkgs/bd829e780195c7db2fe1eaaf8db5567678eb4c7f"; # 2026-09-01
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -851,9 +851,13 @@ Read-only text is given the face `my-read-only'."
 (map! :leader "t t" 'zhangchao-cycle-display)
 
 ;; Enable zhangchao mode in specific modes
+;; (zhangchao-mode also enables zhangchao-lookup-mode: eldoc gloss at point)
 (add-hook 'org-mode-hook 'zhangchao-mode)
 (add-hook 'python-mode-hook 'zhangchao-mode)
 (add-hook 'rust-mode-hook 'zhangchao-mode)
+
+;; Lookup-only (no word replacement) in vterm
+(add-hook 'vterm-mode-hook 'zhangchao-lookup-mode)
 
 ;(use-package multi-vterm :ensure t)
 
@@ -1013,11 +1017,22 @@ then jumps to the first line containing the TODO text."
     (unless target
       (user-error "No file starting with '%s' found under %s"
                   file-id default-directory))
-    (find-file (expand-file-name target default-directory))
-    (goto-char (point-min))
-    (unless (search-forward search-str nil t)
-      (user-error "Could not find '%s' in %s" search-str target))
-    (beginning-of-line)))
+    (let* ((target-path (expand-file-name target default-directory))
+           (buf (find-file-noselect target-path))
+           (match-count (with-current-buffer buf
+                          (save-excursion
+                            (goto-char (point-min))
+                            (how-many (regexp-quote search-str))))))
+      (cond
+       ((= match-count 0)
+        (user-error "Could not find '%s' in %s" search-str target))
+       ((> match-count 1)
+        (user-error "Found %d matches for '%s' in %s"
+                    match-count search-str target)))
+      (find-file target-path)
+      (goto-char (point-min))
+      (search-forward search-str nil t)
+      (beginning-of-line))))
 
 (map! :leader "n j" #'my/agenda-line-jump-to-entry)
 

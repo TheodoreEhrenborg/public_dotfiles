@@ -19,6 +19,7 @@ in {
       reload-home-manager-config = "home-manager switch --flake ${builtins.toString ./.}";
     };
     pointerCursor = {
+      enable = true;
       name = "ComixCursors-Opaque-Red";
       package = pkgs-home-manager.comixcursors.Opaque_Red;
     };

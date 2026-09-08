@@ -161,11 +161,11 @@
 
   services.atd.enable = true;
 
-  # # Make sure opengl is enabled
-  # hardware.graphics = {
-  #   enable = true;
-  #   enable32Bit = true;
-  # };
+  # Make sure opengl is enabled
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
 
   nix.settings.experimental-features = "nix-command flakes";
 
@@ -565,32 +565,32 @@
     };
   };
 
-  # Railway check-in timer
-  systemd.user.timers.railway-checkin = {
-    description = "Timer for railway check-in via claude";
+  # Weekend wakeup timer
+  systemd.user.timers.weekend-wakeup = {
+    description = "Timer for weekend wakeup via claude";
     timerConfig = {
       OnCalendar = [
-        "Mon..Fri *-*-* 08:05:00"
-        "Mon..Fri *-*-* 17:54:00"
+        "Sat *-*-* 09:00:00"
+        "Sun *-*-* 09:00:00"
       ];
       AccuracySec = "1s";
     };
     wantedBy = ["timers.target"];
   };
 
-  # Railway check-in service
-  systemd.user.services.railway-checkin =
+  # Weekend wakeup service
+  systemd.user.services.weekend-wakeup =
     let sleep-claude = pkgs.writeShellScriptBin "sleep-claude" ''
       sleep "$@"
     '';
     in {
-      description = "Run claude for railway check-in";
+      description = "Run claude for weekend wakeup";
       serviceConfig = {
         Type = "oneshot";
         Environment = "PATH=${sleep-claude}/bin:/home/theo/.nix-profile/bin:${pkgs.coreutils}/bin:${pkgs.bash}/bin:$PATH";
-        ExecStart = "${pkgs.writeShellScript "railway-checkin" ''
+        ExecStart = "${pkgs.writeShellScript "weekend-wakeup" ''
           set -e
-          cd $HOME/projects/railway-checkin
+          cd $HOME/projects/weekend-wakeup
           claude --channels plugin:telegram@claude-plugins-official --model sonnet "Follow instructions in CLAUDE.md. Today is $(${pkgs.coreutils}/bin/date)"
         ''}";
       };
